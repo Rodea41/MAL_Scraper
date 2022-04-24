@@ -1,4 +1,5 @@
 
+from unicodedata import name
 from urllib import response
 import requests
 from bs4 import BeautifulSoup
@@ -31,25 +32,34 @@ def get_ranking(url):
     ranking = soup.find('div', class_='score-label').text
     return ranking
 
+def get_name(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    name = soup.find('h1', class_='title-name').text
+    return name
+
 
 #* This function saves the info we got from the get_info function to a file
 def save_to_file(Anime_info):
     with open('anime_info.txt', 'a') as f:
         f.write(Anime_info[0] + '\n')
         f.write(Anime_info[1] + '\n')
+        f.write(Anime_info[2] + '\n')
+
+
 
 short_list = [links[0],links[1],links[3]]
-
 def main():
     for link in short_list:  #! Change this out with link in links after testing
         Anime_info = []
         url = link.a['href']
+        name = get_name(url)
         info = get_info(url)
         ranking = get_ranking(url)
+        Anime_info.append("Name of Anime: " + name)
         Anime_info.append("MAL Score: " + ranking)
         Anime_info.append("Anime Synopsis: " + info)
         
-
         save_to_file(Anime_info)
     
 
